@@ -1,0 +1,9 @@
+li{
+    display: inline-table;
+}
+li.odsjeci{
+    padding-right: 50px;
+}
+#zaglavlje{
+    position: sticky;
+}
