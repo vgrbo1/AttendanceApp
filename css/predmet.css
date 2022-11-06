@@ -5,9 +5,13 @@ li.odsjeci{
     padding-right: 50px;
 }
 #zaglavlje{
+    padding-top: 5px;
     position: sticky;
     top: 0;
     background-color: white;
+}
+li > ul > li{
+    display: inline;
 }
 @media screen and (max-width: 945px) {
     #zaglavlje{
