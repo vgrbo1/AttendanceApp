@@ -13,6 +13,30 @@ li.odsjeci{
 li > ul > li{
     display: inline;
 }
+.box{
+    border: 2px solid black;
+    color: black;
+    padding: 1em;
+    text-align: center;
+}
+img{
+    border: 3px solid black;
+    border-radius: 3px;
+}
+.redovni{
+    background-color: white;
+}
+.izborni{
+    background-color: powderblue;
+}
+.ne_ide{
+    background-color: gray;
+}
+.wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 200px);
+    gap: 10px;
+}
 @media screen and (max-width: 945px) {
     #zaglavlje{
         position: static;
