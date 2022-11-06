@@ -37,9 +37,16 @@ img{
     grid-template-columns: repeat(auto-fit, 200px);
     gap: 10px;
 }
-#ri, #ee, #aie, #tk{
-    
+#ri, #ee, #aie, #tk,
+#ri_rs1, #ri_rs2, #ri_bsc1, 
+#ri_bsc2, #ri_bsc3, #ri_msc1, #ri_msc2,
+#ee_bsc1, #ee_bsc2, #ee_bsc3, #ee_msc1, 
+#ee_msc2, #aie_bsc1, #aie_bsc2, #aie_bsc3, 
+#aie_msc1, #aie_msc2, #tk_bsc1, 
+#tk_bsc2, #tk_bsc3, #tk_msc1, #tk_msc2{
+    scroll-margin-top: 100px;
 }
+
 @media all and (max-width: 945px) {
     #zaglavlje{
         position: static;
@@ -47,4 +54,13 @@ img{
     li{
         display: block;
     }   
+    #ri, #ee, #aie, #tk,
+    #ri_rs1, #ri_rs2, #ri_bsc1, 
+    #ri_bsc2, #ri_bsc3, #ri_msc1, #ri_msc2,
+    #ee_bsc1, #ee_bsc2, #ee_bsc3, #ee_msc1, 
+    #ee_msc2, #aie_bsc1, #aie_bsc2, #aie_bsc3, 
+    #aie_msc1, #aie_msc2, #tk_bsc1, 
+    #tk_bsc2, #tk_bsc3, #tk_msc1, #tk_msc2{
+    scroll-margin-top: 5px;
+    }
 }
