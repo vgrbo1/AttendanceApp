@@ -37,6 +37,9 @@ img{
     grid-template-columns: repeat(auto-fit, 200px);
     gap: 10px;
 }
+#ri, #ee, #aie, #tk{
+    
+}
 @media all and (max-width: 945px) {
     #zaglavlje{
         position: static;
