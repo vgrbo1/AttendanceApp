@@ -13,4 +13,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
     var indeksi = podaci.studenti.map((element) => element.index);
     var istiIndeksi = indeksi.some((element, index, array) => array.indexOf(element) != index);
 
+    var indeksiPrisustva = prisustva.map((element) => element.index);
+    var prisustvoNepostojecegStudenta = indeksiPrisustva.some((element) => indeksi.indexOf(element) == -1);
+
 };
