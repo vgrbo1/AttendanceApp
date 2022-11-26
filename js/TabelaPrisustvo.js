@@ -30,8 +30,47 @@ let TabelaPrisustvo = function (divRef, podaci) {
         }
     }
 
-    divRef.innerHTML = "<h1>" + podaci.predmet + "</h1>"
+    var maxSedmica = sedmice[sedmice.length-1];
+    var trenutnaSedmica = maxSedmica;
+    var sedmiceRimski = ["I", "II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV"];
+    divRef.innerHTML = "<h1>" + podaci.predmet + "<br>" + maxSedmica + "</h1>";
     if(brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu)
         divRef.innerHTML += "Podaci o prisustvu nisu validni!";
+    else{
+        var tabela = document.createElement("table");
+        var red = document.createElement("tr");
+        var thImePrezime = document.createElement("th");
+        var br = document.createElement("br");
+        thImePrezime.appendChild(document.createTextNode("Ime i"));
+        thImePrezime.appendChild(br);
+        thImePrezime.appendChild(document.createTextNode("prezime"));
+        var thIndex = document.createElement("th");
+        thIndex.appendChild(document.createTextNode("Index"));
+        red.appendChild(thImePrezime);
+        red.appendChild(thIndex);
+
+        for(let i = 0; i < maxSedmica; i++){
+            let th = document.createElement("th");
+            th.appendChild(document.createTextNode(sedmiceRimski[i]));
+            if( i == maxSedmica - 1){
+                th.colSpan = 5;
+            }
+            red.appendChild(th);
+            if(maxSedmica == 14 && i == 13){
+                th = document.createElement("th");
+                th.appendChild(document.createTextNode(sedmiceRimski[14]));
+                red.appendChild(th);
+            }
+        }
+
+        if(maxSedmica < 14){
+            let th = document.createElement("th");
+            th.appendChild(document.createTextNode(sedmiceRimski[maxSedmica] + "-" + sedmiceRimski[14]));
+            th.colSpan = 15 - maxSedmica + 1;
+            red.appendChild(th);
+        }
+        tabela.appendChild(red);
     
+        divRef.appendChild(tabela);
+    }
 };
