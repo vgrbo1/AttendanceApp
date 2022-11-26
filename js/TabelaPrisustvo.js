@@ -30,13 +30,13 @@ let TabelaPrisustvo = function (divRef, podaci) {
         }
     }
 
-    var maxSedmica = sedmice[sedmice.length-1];
+    var maxSedmica = sedmice[sedmice.length - 1];
     var trenutnaSedmica = maxSedmica;
-    var sedmiceRimski = ["I", "II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV"];
-    divRef.innerHTML = "<h1>" + podaci.predmet + "<br>" + maxSedmica + "</h1>";
-    if(brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu)
+    var sedmiceRimski = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV"];
+    divRef.innerHTML = "<h1>" + podaci.predmet + "</h1>";
+    if (brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu)
         divRef.innerHTML += "Podaci o prisustvu nisu validni!";
-    else{
+    else {
         var tabela = document.createElement("table");
         var red = document.createElement("tr");
         var thImePrezime = document.createElement("th");
@@ -49,28 +49,116 @@ let TabelaPrisustvo = function (divRef, podaci) {
         red.appendChild(thImePrezime);
         red.appendChild(thIndex);
 
-        for(let i = 0; i < maxSedmica; i++){
+        for (let i = 0; i < maxSedmica; i++) {
             let th = document.createElement("th");
             th.appendChild(document.createTextNode(sedmiceRimski[i]));
-            if( i == maxSedmica - 1){
-                th.colSpan = 5;
+            if (i == maxSedmica - 1) {
+                th.colSpan = podaci.brojPredavanjaSedmicno + podaci.brojVjezbiSedmicno;
             }
             red.appendChild(th);
-            if(maxSedmica == 14 && i == 13){
+            if (maxSedmica == 14 && i == 13) {
                 th = document.createElement("th");
                 th.appendChild(document.createTextNode(sedmiceRimski[14]));
                 red.appendChild(th);
             }
         }
 
-        if(maxSedmica < 14){
+        if (maxSedmica < 14) {
             let th = document.createElement("th");
             th.appendChild(document.createTextNode(sedmiceRimski[maxSedmica] + "-" + sedmiceRimski[14]));
-            th.colSpan = 15 - maxSedmica + 1;
+            th.colSpan = 15 - maxSedmica;
             red.appendChild(th);
         }
         tabela.appendChild(red);
-    
+        for (let i = 0; i < podaci.studenti.length; i++) {
+            red = document.createElement("tr");
+            td = document.createElement("td");
+            td.rowSpan = 2;
+            td.appendChild(document.createTextNode(podaci.studenti[i].ime));
+            red.appendChild(td);
+            td = document.createElement("td");
+            td.rowSpan = 2;
+            td.appendChild(document.createTextNode(podaci.studenti[i].index));
+            red.appendChild(td);
+            
+            for (let j = 1; j <= maxSedmica; j++) {
+                var prisustvo = prisustva.find(element => element.sedmica == j && element.index == podaci.studenti[i].index);
+                if (j != trenutnaSedmica) {
+                    td = document.createElement("td");
+                    td.rowSpan = 2;
+                    if (typeof prisustvo !== "undefined") {
+                        var postotak = Math.round(100 * (prisustvo.predavanja + prisustvo.vjezbe) / (podaci.brojPredavanjaSedmicno + podaci.brojVjezbiSedmicno));
+                        td.appendChild(document.createTextNode(postotak + "%"))
+                    }
+
+                    red.appendChild(td);
+                }
+                else {
+                    for (let i = 0; i < podaci.brojPredavanjaSedmicno; i++) {
+                        td = document.createElement("td");
+                        td.appendChild(document.createTextNode("P"));
+                        td.appendChild(document.createElement("br"));
+                        td.appendChild(document.createTextNode((i+1)));
+                        red.appendChild(td);
+                    }
+
+                    for (let i = 0; i < podaci.brojVjezbiSedmicno; i++) {
+                        td = document.createElement("td");
+                        td.appendChild(document.createTextNode("V"));
+                        td.appendChild(document.createElement("br"));
+                        td.appendChild(document.createTextNode((i+1)));
+                        red.appendChild(td);
+                    }
+                }
+            }
+            td = document.createElement("td");
+            td.rowSpan = 2;
+            td.colSpan = 15 - maxSedmica;
+            red.appendChild(td);
+
+
+            tabela.appendChild(red);
+
+            red = document.createElement("tr");
+            var trenutnoPrisustvo = prisustva.find(element => element.sedmica == trenutnaSedmica && element.index == podaci.studenti[i].index);
+
+            for (let i = 0; i < podaci.brojPredavanjaSedmicno; i++) {
+                td = document.createElement("td");
+                td.appendChild(document.createTextNode(" "));
+                td.appendChild(document.createElement("br"));
+                td.appendChild(document.createTextNode(" "));
+                if(typeof trenutnoPrisustvo !== "undefined"){
+                    if(i < prisustvo.predavanja)
+                        td.className = "prisutan"
+                    else
+                        td.className = "odsutan";
+                }
+                red.appendChild(td);
+            }
+
+            for (let i = 0; i < podaci.brojVjezbiSedmicno; i++) {
+                td = document.createElement("td");
+                td.appendChild(document.createTextNode(" "));
+                td.appendChild(document.createElement("br"));
+                td.appendChild(document.createTextNode(" "));
+                if(typeof trenutnoPrisustvo !== "undefined"){
+                    if(i < prisustvo.vjezbe)
+                        td.className = "prisutan"
+                    else
+                        td.className = "odsutan";
+                }
+                red.appendChild(td);
+            }
+            tabela.appendChild(red);
+        }
+        
+        red = document.createElement("tr");
+        for (let i = 0; i < 17 + podaci.brojPredavanjaSedmicno + podaci.brojVjezbiSedmicno - 1; i++) {
+            td = document.createElement("td");
+            td.style.display = "none";
+            red.appendChild(td);
+        }
+        tabela.appendChild(red);
         divRef.appendChild(tabela);
     }
 };
