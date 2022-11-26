@@ -34,9 +34,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
     var trenutnaSedmica = maxSedmica;
     var sedmiceRimski = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV"];
     divRef.innerHTML = "<h1>" + podaci.predmet + "</h1>";
-    if (brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu)
-        divRef.innerHTML += "Podaci o prisustvu nisu validni!";
-    else {
+    let crtaj = function (trenutnaSedmica) {
         var tabela = document.createElement("table");
         var red = document.createElement("tr");
         var thImePrezime = document.createElement("th");
@@ -80,7 +78,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
             td.rowSpan = 2;
             td.appendChild(document.createTextNode(podaci.studenti[i].index));
             red.appendChild(td);
-            
+
             for (let j = 1; j <= maxSedmica; j++) {
                 var prisustvo = prisustva.find(element => element.sedmica == j && element.index == podaci.studenti[i].index);
                 if (j != trenutnaSedmica) {
@@ -98,7 +96,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
                         td = document.createElement("td");
                         td.appendChild(document.createTextNode("P"));
                         td.appendChild(document.createElement("br"));
-                        td.appendChild(document.createTextNode((i+1)));
+                        td.appendChild(document.createTextNode((i + 1)));
                         red.appendChild(td);
                     }
 
@@ -106,7 +104,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
                         td = document.createElement("td");
                         td.appendChild(document.createTextNode("V"));
                         td.appendChild(document.createElement("br"));
-                        td.appendChild(document.createTextNode((i+1)));
+                        td.appendChild(document.createTextNode((i + 1)));
                         red.appendChild(td);
                     }
                 }
@@ -127,8 +125,8 @@ let TabelaPrisustvo = function (divRef, podaci) {
                 td.appendChild(document.createTextNode(" "));
                 td.appendChild(document.createElement("br"));
                 td.appendChild(document.createTextNode(" "));
-                if(typeof trenutnoPrisustvo !== "undefined"){
-                    if(i < prisustvo.predavanja)
+                if (typeof trenutnoPrisustvo !== "undefined") {
+                    if (i < prisustvo.predavanja)
                         td.className = "prisutan"
                     else
                         td.className = "odsutan";
@@ -141,8 +139,8 @@ let TabelaPrisustvo = function (divRef, podaci) {
                 td.appendChild(document.createTextNode(" "));
                 td.appendChild(document.createElement("br"));
                 td.appendChild(document.createTextNode(" "));
-                if(typeof trenutnoPrisustvo !== "undefined"){
-                    if(i < prisustvo.vjezbe)
+                if (typeof trenutnoPrisustvo !== "undefined") {
+                    if (i < prisustvo.vjezbe)
                         td.className = "prisutan"
                     else
                         td.className = "odsutan";
@@ -151,7 +149,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
             }
             tabela.appendChild(red);
         }
-        
+
         red = document.createElement("tr");
         for (let i = 0; i < 17 + podaci.brojPredavanjaSedmicno + podaci.brojVjezbiSedmicno - 1; i++) {
             td = document.createElement("td");
@@ -161,4 +159,26 @@ let TabelaPrisustvo = function (divRef, podaci) {
         tabela.appendChild(red);
         divRef.appendChild(tabela);
     }
+    if (brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu)
+        divRef.innerHTML += "Podaci o prisustvu nisu validni!";
+    else {
+        crtaj(trenutnaSedmica);
+    }
+    let sljedecaSedmica = function () {
+        if(trenutnaSedmica > 1){
+            trenutnaSedmica--;
+            crtaj(trenutnaSedmica);
+        }
+    }
+    let prethodnaSedmica = function () {
+        if(trenutnaSedmica < maxSedmica){
+            trenutnaSedmica++;
+            crtaj(trenutnaSedmica);
+        }
+    }
+    return {
+        sljedecaSedmica: sljedecaSedmica,
+        prethodnaSedmica: prethodnaSedmica
+    }
+        
 };
