@@ -128,7 +128,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
                 td.appendChild(document.createElement("br"));
                 td.appendChild(document.createTextNode(" "));
                 if (typeof trenutnoPrisustvo !== "undefined") {
-                    if (i < prisustvo.predavanja)
+                    if (i < trenutnoPrisustvo.predavanja)
                         td.className = "prisutan"
                     else
                         td.className = "odsutan";
@@ -142,7 +142,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
                 td.appendChild(document.createElement("br"));
                 td.appendChild(document.createTextNode(" "));
                 if (typeof trenutnoPrisustvo !== "undefined") {
-                    if (i < prisustvo.vjezbe)
+                    if (i < trenutnoPrisustvo.vjezbe)
                         td.className = "prisutan"
                     else
                         td.className = "odsutan";
