@@ -33,8 +33,10 @@ let TabelaPrisustvo = function (divRef, podaci) {
     var maxSedmica = sedmice[sedmice.length - 1];
     var trenutnaSedmica = maxSedmica;
     var sedmiceRimski = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV", "XV"];
-    divRef.innerHTML = "<h1>" + podaci.predmet + "</h1>";
+    
     let crtaj = function (trenutnaSedmica) {
+        divRef.innerHTML = "";
+        divRef.innerHTML = "<h1>" + podaci.predmet + "</h1>";
         var tabela = document.createElement("table");
         var red = document.createElement("tr");
         var thImePrezime = document.createElement("th");
@@ -50,7 +52,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
         for (let i = 0; i < maxSedmica; i++) {
             let th = document.createElement("th");
             th.appendChild(document.createTextNode(sedmiceRimski[i]));
-            if (i == maxSedmica - 1) {
+            if (i == trenutnaSedmica - 1) {
                 th.colSpan = podaci.brojPredavanjaSedmicno + podaci.brojVjezbiSedmicno;
             }
             red.appendChild(th);
@@ -164,13 +166,13 @@ let TabelaPrisustvo = function (divRef, podaci) {
     else {
         crtaj(trenutnaSedmica);
     }
-    let sljedecaSedmica = function () {
+    let prethodnaSedmica = function () {
         if(trenutnaSedmica > 1){
             trenutnaSedmica--;
             crtaj(trenutnaSedmica);
         }
     }
-    let prethodnaSedmica = function () {
+    let sljedecaSedmica = function () {
         if(trenutnaSedmica < maxSedmica){
             trenutnaSedmica++;
             crtaj(trenutnaSedmica);
