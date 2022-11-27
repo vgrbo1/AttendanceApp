@@ -161,19 +161,21 @@ let TabelaPrisustvo = function (divRef, podaci) {
         tabela.appendChild(red);
         divRef.appendChild(tabela);
     }
-    if (brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu)
-        divRef.innerHTML += "Podaci o prisustvu nisu validni!";
+    var nevalidni = brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu;
+
+    if (nevalidni)
+        divRef.innerHTML = "Podaci o prisustvu nisu validni!";
     else {
         crtaj(trenutnaSedmica);
     }
     let prethodnaSedmica = function () {
-        if(trenutnaSedmica > 1){
+        if(!nevalidni && trenutnaSedmica > 1){
             trenutnaSedmica--;
             crtaj(trenutnaSedmica);
         }
     }
     let sljedecaSedmica = function () {
-        if(trenutnaSedmica < maxSedmica){
+        if(!nevalidni && trenutnaSedmica < maxSedmica){
             trenutnaSedmica++;
             crtaj(trenutnaSedmica);
         }
