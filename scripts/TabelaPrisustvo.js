@@ -114,7 +114,8 @@ let TabelaPrisustvo = function (divRef, podaci) {
             td = document.createElement("td");
             td.rowSpan = 2;
             td.colSpan = 15 - maxSedmica;
-            red.appendChild(td);
+            if(maxSedmica < 15)
+                red.appendChild(td);
 
 
             tabela.appendChild(red);
