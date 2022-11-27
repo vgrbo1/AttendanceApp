@@ -22,6 +22,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
     })
     sedmice.sort((a, b) => a - b);
 
+    var sedmiceIzvanOpsega = sedmice.some(element => element < 1 || element > 15);
     var nevalidneSedmice = false;
     for (let i = 1; i < sedmice.length; i++) {
         if (sedmice[i] != sedmice[i - 1] + 1) {
@@ -162,7 +163,7 @@ let TabelaPrisustvo = function (divRef, podaci) {
         tabela.appendChild(red);
         divRef.appendChild(tabela);
     }
-    var nevalidni = brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu;
+    var nevalidni = sedmiceIzvanOpsega || brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu;
 
     if (nevalidni)
         divRef.innerHTML = "Podaci o prisustvu nisu validni!";
