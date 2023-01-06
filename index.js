@@ -7,8 +7,12 @@ const bcrypt = require ('bcrypt');
 app.use(express.static('public'));
 app.use(express.static('public/html'));
 app.use(bodyParser.json());
-
-
+app.use(session({
+    secret: 'tajna sifra',
+    resave: true,
+    saveUninitialized: true
+ }));
+ 
 
 fs.readFile('data/nastavnici.json', (err, data) => {
     if (err) throw err;
@@ -30,8 +34,11 @@ app.post('/login', function(req, res){
         bcrypt.compare(loginPodaci.password, nastavnik.nastavnik.password_hash, (err, resp) => {
             if (err) throw err;
 
-            if (resp) 
+            if (resp){ 
                 res.json({poruka: "Uspješna prijava"});
+                req.session.username = loginPodaci.username;
+                req.session.predmeti = nastavnik.predmeti;
+            }
             else
                 res.json({poruka: "Neuspješna prijava"});
           });
