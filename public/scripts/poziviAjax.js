@@ -6,7 +6,16 @@ const PoziviAjax = (()=>{
     function impl_getPredmeti(fnCallback){
     }
     function impl_postLogin(username,password,fnCallback){
-        
+        let ajax = new XMLHttpRequest();
+        ajax.open("POST", "http://localhost:3000/login", true);
+        ajax.setRequestHeader("Content-Type", "application/json");
+        ajax.send(JSON.stringify({username: username, password: password}));
+        ajax.onreadystatechange = function () {
+            if (ajax.readyState == 4 && ajax.status == 200){
+                callbackFja(null, ajax.responseText);
+                console.log(ajax.responseText);
+            }
+        };
     }
     function impl_postLogout(fnCallback){
     }
@@ -21,4 +30,3 @@ const PoziviAjax = (()=>{
     postPrisustvo: impl_postPrisustvo,
     };
     })();
-PoziviAjax
