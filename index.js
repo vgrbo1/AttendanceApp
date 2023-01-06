@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const bcrypt = require ('bcrypt');
+const session = require("express-session");
 
 app.use(express.static('public'));
 app.use(express.static('public/html'));
