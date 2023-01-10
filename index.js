@@ -50,7 +50,7 @@ app.post('/login', function(req, res){
 
 app.get('/predmeti', function(req, res){
     if(req.session.username != undefined){
-        res.sendFile(path.join(__dirname,'public','html','predmeti.html'));
+        res.json(nastavnik.predmeti);
     }
     else{
         res.json({poruka: "Nastavnik nije loginovan"});
