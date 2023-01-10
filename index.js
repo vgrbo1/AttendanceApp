@@ -21,6 +21,11 @@ fs.readFile('data/nastavnici.json', (err, data) => {
     nastavnici = JSON.parse(data);
   });
 
+fs.readFile('data/prisustva.json', (err, data) => {
+    if (err) throw err;
+    prisustva = JSON.parse(data);
+});
+
 app.get('/', function(req, res){
     res.json({poruka: "OK"});
 });
@@ -51,6 +56,16 @@ app.post('/login', function(req, res){
 app.get('/predmeti', function(req, res){
     if(req.session.username != undefined){
         res.json(nastavnik.predmeti);
+    }
+    else{
+        res.json({poruka: "Nastavnik nije loginovan"});
+    }
+});
+
+app.get('/predmet/:NAZIV', function(req, res){
+    if(req.session.username != undefined){
+        prisustvo = prisustva.find(p => p.predmet == req.params.NAZIV);
+        res.json(prisustvo);
     }
     else{
         res.json({poruka: "Nastavnik nije loginovan"});

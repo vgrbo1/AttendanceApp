@@ -1,13 +1,19 @@
 const PoziviAjax = (()=>{
 
     function impl_getPredmet(naziv,fnCallback){
-
+        let ajax = new XMLHttpRequest();
+        ajax.open("GET", "http://localhost:3000/predmet/"+naziv, true);
+        ajax.send();
+        ajax.onreadystatechange = function () {
+            if (ajax.readyState == 4 && ajax.status == 200){
+                fnCallback(null, JSON.parse(ajax.response));
+            }
+        };
     }
     // vraća listu predmeta za loginovanog nastavnika ili grešku da nastavnik nije loginovan
     function impl_getPredmeti(fnCallback){
         let ajax = new XMLHttpRequest();
         ajax.open("GET", "http://localhost:3000/predmeti", true);
-        ajax.setRequestHeader("Content-Type", "application/json");
         ajax.send();
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){

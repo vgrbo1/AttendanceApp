@@ -162,6 +162,9 @@ let TabelaPrisustvo = function (divRef, podaci) {
         }
         tabela.appendChild(red);
         divRef.appendChild(tabela);
+        
+        
+        
     }
     var nevalidni = sedmiceIzvanOpsega || brojPrisustvaPrevelik || brojPrisustvaNegativan || istiIndeksi || prisustvoNepostojecegStudenta || nevalidneSedmice || visePrisustvaZaIstuSedmicu;
 
@@ -182,6 +185,26 @@ let TabelaPrisustvo = function (divRef, podaci) {
             crtaj(trenutnaSedmica);
         }
     }
+        let dugmad = document.getElementById("dugmad");
+        dugmad.innerHTML = "";
+        let lijevo = document.createElement("i");
+        lijevo.className = "fa-solid fa-arrow-left";
+        let desno = document.createElement("i");
+        desno.className = "fa-solid fa-arrow-right";
+        let lb = document.createElement("button");
+        let rb = document.createElement("button");
+
+        lb.onclick = prethodnaSedmica;
+        rb.onclick = sljedecaSedmica;
+        lb.appendChild(lijevo);
+        rb.appendChild(desno);
+
+        lb.style.marginTop = "5px";
+        rb.style.marginTop = "5px";
+        rb.style.marginLeft = "5px";
+
+        dugmad.appendChild(lb);
+        dugmad.appendChild(rb);
     return {
         sljedecaSedmica: sljedecaSedmica,
         prethodnaSedmica: prethodnaSedmica
