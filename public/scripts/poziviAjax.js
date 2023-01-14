@@ -40,10 +40,18 @@ const PoziviAjax = (()=>{
         ajax.send(JSON.stringify({username: username, password: password}));
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){
-                window.location = "/predmeti.html";
+                let odgovor = JSON.parse(ajax.response);
+                if(odgovor.poruka == "Uspješna prijava"){
+                    fnCallback(null, odgovor.poruka);
+                    window.location = "/predmeti.html";
+                }
+                else{
+                    fnCallback(odgovor.poruka, null);
+                }
             }
         };
     }
+
     function impl_postLogout(fnCallback){
         let ajax = new XMLHttpRequest();
         ajax.open("POST", "http://localhost:3000/logout", true);
