@@ -83,12 +83,12 @@ let TabelaPrisustvo = function (divRef, podaci) {
             red.appendChild(td);
 
             for (let j = 1; j <= maxSedmica; j++) {
-                var prisustvo = prisustva.find(element => element.sedmica == j && element.index == podaci.studenti[i].index);
+                let prisustvo = prisustva.find(element => element.sedmica == j && element.index == podaci.studenti[i].index);
                 if (j != trenutnaSedmica) {
                     td = document.createElement("td");
                     td.rowSpan = 2;
                     if (typeof prisustvo !== "undefined") {
-                        var postotak = Math.round(100 * (prisustvo.predavanja + prisustvo.vjezbe) / (podaci.brojPredavanjaSedmicno + podaci.brojVjezbiSedmicno));
+                        let postotak = Math.round(100 * (prisustvo.predavanja + prisustvo.vjezbe) / (podaci.brojPredavanjaSedmicno + podaci.brojVjezbiSedmicno));
                         td.appendChild(document.createTextNode(postotak + "%"))
                     }
 
@@ -123,12 +123,25 @@ let TabelaPrisustvo = function (divRef, podaci) {
 
             red = document.createElement("tr");
             var trenutnoPrisustvo = prisustva.find(element => element.sedmica == trenutnaSedmica && element.index == podaci.studenti[i].index);
+            
+            red.dataset.index = podaci.studenti[i].index;
+            red.dataset.sedmica = trenutnaSedmica;
+            red.dataset.predavanja = 0;
+            red.dataset.vjezbe = 0;
+            red.dataset.naziv = podaci.predmet;
+            if(typeof trenutnoPrisustvo != "undefined"){
+               red.dataset.predavanja = trenutnoPrisustvo.predavanja;
+               red.dataset.vjezbe = trenutnoPrisustvo.vjezbe;
+            }
+
 
             for (let i = 0; i < podaci.brojPredavanjaSedmicno; i++) {
                 td = document.createElement("td");
                 td.appendChild(document.createTextNode(" "));
                 td.appendChild(document.createElement("br"));
                 td.appendChild(document.createTextNode(" "));
+                td.className = "prazno";
+                td.dataset.tip = "p";
                 if (typeof trenutnoPrisustvo !== "undefined") {
                     if (i < trenutnoPrisustvo.predavanja)
                         td.className = "prisutan"
@@ -143,6 +156,8 @@ let TabelaPrisustvo = function (divRef, podaci) {
                 td.appendChild(document.createTextNode(" "));
                 td.appendChild(document.createElement("br"));
                 td.appendChild(document.createTextNode(" "));
+                td.className = "prazno";
+                td.dataset.tip = "v";
                 if (typeof trenutnoPrisustvo !== "undefined") {
                     if (i < trenutnoPrisustvo.vjezbe)
                         td.className = "prisutan"
