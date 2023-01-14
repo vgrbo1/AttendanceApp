@@ -83,14 +83,20 @@ app.post('/logout', function(req, res){
 
 app.post('/prisustvo/predmet/:NAZIV/student/:index', function(req, res){
     let naziv = req.params.NAZIV;
-    let index = req.params.index;
-    let prisustvo = req.body;
-    let prisustvoPredmeta = prisustva.find(p => p.predmet == naziv);
-    let prisustvoStudenta = prisustvoPredmeta.prisustva.find(s => s.index == index && s.sedmica == prisustvo.sedmica);
-    prisustvoStudenta.predavanja = parseInt(prisustvo.predavanja);
-    
-    prisustvoStudenta.vjezbe = parseInt(prisustvo.vjezbe);
+    let index = parseInt(req.params.index);
+    let sedmica = parseInt(req.body.sedmica);
+    let predavanja = parseInt(req.body.predavanja);
+    let vjezbe = parseInt(req.body.vjezbe);
 
+    let prisustvoPredmeta = prisustva.find(p => p.predmet == naziv);
+    let prisustvoStudenta = prisustvoPredmeta.prisustva.find(s => s.index == index && s.sedmica == sedmica);
+    if (prisustvoStudenta == undefined){
+        prisustvoPredmeta.prisustva.push({sedmica: sedmica, predavanja: predavanja, vjezbe: vjezbe, index: index});
+    }
+    else{
+        prisustvoStudenta.predavanja = predavanja
+        prisustvoStudenta.vjezbe = vjezbe
+    }
     fs.writeFile('data/prisustva.json', JSON.stringify(prisustva), (err) => {
         if(err)
             console.log(err);
