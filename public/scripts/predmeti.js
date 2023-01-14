@@ -1,5 +1,9 @@
 function odjava(){
-    PoziviAjax.postLogout(" ");
+    PoziviAjax.postLogout((err) => {
+        if(err){
+            console.log(err);
+        }
+    });
 }
 function loadaj(){
     PoziviAjax.getPredmeti("");

@@ -74,9 +74,9 @@ app.get('/predmet/:NAZIV', function(req, res){
 app.post('/logout', function(req, res){
     req.session.destroy(err => {
         if (err) 
-          res.send(err);
+            res.json({poruka: "Greška prilikom odjave"});
         else {
-            
+            res.json({poruka: "Uspješna odjava"});
         }
       });
 });

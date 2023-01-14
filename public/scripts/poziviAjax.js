@@ -56,7 +56,17 @@ const PoziviAjax = (()=>{
         let ajax = new XMLHttpRequest();
         ajax.open("POST", "http://localhost:3000/logout", true);
         ajax.send();
-        window.location = "/prijava.html";
+        ajax.onreadystatechange = function () {
+            if (ajax.readyState == 4 && ajax.status == 200){  
+                if(JSON.parse(ajax.response).poruka == "Uspješna odjava"){
+                    window.location = "/prijava.html";
+                }
+                else{
+                    fnCallback(JSON.parse(ajax.response));
+                }
+
+            }
+        };
     }
     //prisustvo ima oblik {sedmica:N,predavanja:P,vjezbe:V}
     function impl_postPrisustvo(naziv,index,prisustvo,fnCallback){
