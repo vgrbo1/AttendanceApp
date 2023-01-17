@@ -94,20 +94,31 @@ app.post('/prisustvo/predmet/:NAZIV/student/:index', function(req, res){
     let vjezbe = req.body.vjezbe;
 
     let prisustvoPredmeta = prisustva.find(p => p.predmet == naziv);
-    let prisustvoStudenta = prisustvoPredmeta.prisustva.find(s => s.index == index && s.sedmica == sedmica);
-    if (prisustvoStudenta == undefined){
-        prisustvoPredmeta.prisustva.push({sedmica: sedmica, predavanja: predavanja, vjezbe: vjezbe, index: index});
+    if(prisustvoPredmeta == undefined){
+        res.status(404).json({poruka: "Nepostojeci predmet"});
     }
     else{
-        prisustvoStudenta.predavanja = predavanja
-        prisustvoStudenta.vjezbe = vjezbe
-    }
-    fs.writeFile('data/prisustva.json', JSON.stringify(prisustva), (err) => {
-        if(err)
-            console.log(err);
-        else{
-            res.json(prisustvoPredmeta);
+        let student = prisustvoPredmeta.studenti.find(s => s.index == index);
+        if(student == undefined){
+            res.status(404).json({poruka: "Nepostojeci student"});
         }
-    });
+        else{
+            let prisustvoStudenta = prisustvoPredmeta.prisustva.find(s => s.index == index && s.sedmica == sedmica);
+            if (prisustvoStudenta == undefined){
+                prisustvoPredmeta.prisustva.push({sedmica: sedmica, predavanja: predavanja, vjezbe: vjezbe, index: index});
+            }
+            else{
+                prisustvoStudenta.predavanja = predavanja
+                prisustvoStudenta.vjezbe = vjezbe
+            }
+            fs.writeFile('data/prisustva.json', JSON.stringify(prisustva), (err) => {
+                if(err)
+                    console.log(err);
+                else{
+                    res.json(prisustvoPredmeta);
+                }
+            });
+        }
+    }
 });
 app.listen(3000);

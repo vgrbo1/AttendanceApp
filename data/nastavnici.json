@@ -6,17 +6,7 @@
     },
     "predmeti": [
     "Web tehnologije",
-    "PREDMET2",
-    "PREDMET3"
-    ]
-    },
-    {
-    "nastavnik": {
-    "username": "USERNAME2",
-    "password_hash": "PASSWORDHASH2"
-    },
-    "predmeti": [
-    "PREDMET1"
+    "Tehnike programiranja"
     ]
     }
 ]    
