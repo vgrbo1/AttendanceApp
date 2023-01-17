@@ -43,7 +43,7 @@ meni.addEventListener("click", (Event) => {
         
     }
 });
-
+/*
 tabelaPrisustvo.addEventListener("click", (Event) => {
     let klasa = Event.target.className;
     if(klasa == "prisutan" || klasa == "odsutan" || klasa == "prazno"){
@@ -77,3 +77,4 @@ tabelaPrisustvo.addEventListener("click", (Event) => {
 
     }
 });
+*/
