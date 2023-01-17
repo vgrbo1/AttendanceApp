@@ -88,7 +88,7 @@ app.post('/logout', function(req, res){
 
 app.post('/prisustvo/predmet/:NAZIV/student/:index', function(req, res){
     let naziv = req.params.NAZIV;
-    let index = req.params.index;
+    let index = parseInt(req.params.index);
     let sedmica = req.body.sedmica;
     let predavanja = req.body.predavanja;
     let vjezbe = req.body.vjezbe;
