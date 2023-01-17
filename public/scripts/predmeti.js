@@ -34,6 +34,7 @@ meni.addEventListener("click", (Event) => {
         PoziviAjax.getPredmet(naziv,function(err, data){
             if(err){
                 console.log(err);
+                tabelaPrisustvo.innerHTML = "Nema prisustva za predmet";
             }
             else{
                 let prisustvo = TabelaPrisustvo(tabelaPrisustvo, data);
