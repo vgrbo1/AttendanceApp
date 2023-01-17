@@ -30,11 +30,11 @@ tabelaPrisustvo.addEventListener("click", (Event) => {
     if(klasa == "prisutan" || klasa == "odsutan" || klasa == "prazno"){
         let tip = Event.target.dataset.tip;
         let red = Event.target.closest('tr');
-        let index = red.dataset.index;
+        let index = parseInt(red.dataset.index);
         let naziv = red.dataset.naziv;
-        let sedmica = red.dataset.sedmica;
-        let predavanja = red.dataset.predavanja;
-        let vjezbe = red.dataset.vjezbe;
+        let sedmica = parseInt(red.dataset.sedmica);
+        let predavanja = parseInt(red.dataset.predavanja);
+        let vjezbe = parseInt(red.dataset.vjezbe);
         if(klasa == "odsutan" || klasa == "prazno"){
             if(tip == "p")
                 predavanja++;
