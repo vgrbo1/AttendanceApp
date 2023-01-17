@@ -7,6 +7,9 @@ const PoziviAjax = (()=>{
             if (ajax.readyState == 4 && ajax.status == 200){
                 fnCallback(null, JSON.parse(ajax.response));
             }
+            if (ajax.readyState == 4 && ajax.status == 404){
+                fnCallback(ajax.response, null);
+            }
         };
         ajax.send();
     }
@@ -16,19 +19,8 @@ const PoziviAjax = (()=>{
         ajax.open("GET", "http://localhost:3000/predmeti", true);
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){
-                let div = document.getElementById("meni");
-                let predmeti = JSON.parse(ajax.response);
-                let listaPredmeta = document.createElement("ul");
-        
-                predmeti.forEach(element => {
-                    let elementListe = document.createElement("li");
-                    let link = document.createElement("a");
-                    link.href="#";
-                    link.textContent = element;
-                    elementListe.appendChild(link);
-                    listaPredmeta.appendChild(elementListe);
-                });
-                div.appendChild(listaPredmeta);
+                fnCallback(null,JSON.parse(ajax.response));
+                
             }
         };
         ajax.send();
@@ -58,10 +50,11 @@ const PoziviAjax = (()=>{
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){  
                 if(JSON.parse(ajax.response).poruka == "Uspješna odjava"){
+                    fnCallback(null,JSON.parse(ajax.response));
                     window.location = "/prijava.html";
                 }
                 else{
-                    fnCallback(JSON.parse(ajax.response));
+                    fnCallback(JSON.parse(ajax.response),null);
                 }
 
             }

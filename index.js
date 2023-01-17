@@ -64,8 +64,13 @@ app.get('/predmeti', function(req, res){
 
 app.get('/predmet/:NAZIV', function(req, res){
     if(req.session.username != undefined){
-        prisustvo = prisustva.find(p => p.predmet == req.params.NAZIV);
-        res.json(prisustvo);
+        let prisustvo = prisustva.find(p => p.predmet == req.params.NAZIV);
+        if(prisustvo != undefined){
+            res.json(prisustvo);
+        }
+        else{
+            res.status(404).json({poruka: "Nepostojeci predmet"});
+        }
     }
     else{
         res.json({poruka: "Nastavnik nije loginovan"});

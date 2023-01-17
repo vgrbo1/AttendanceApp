@@ -1,12 +1,30 @@
 function odjava(){
-    PoziviAjax.postLogout((err) => {
+    PoziviAjax.postLogout((err,data) => {
         if(err){
             console.log(err);
         }
     });
 }
 function loadaj(){
-    PoziviAjax.getPredmeti("");
+    PoziviAjax.getPredmeti((err, data) => {
+        if(err){
+        }
+        else{
+        let div = document.getElementById("meni");
+        let listaPredmeta = document.createElement("ul");
+
+        data.forEach(element => {
+            let elementListe = document.createElement("li");
+            let link = document.createElement("a");
+            link.href="#";
+            link.textContent = element;
+            elementListe.appendChild(link);
+            listaPredmeta.appendChild(elementListe);
+        });
+
+        div.appendChild(listaPredmeta);
+        }
+    });
 }
 const meni = document.getElementById("meni");
 const tabelaPrisustvo = document.getElementById("prisustvo");
