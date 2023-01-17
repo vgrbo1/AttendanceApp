@@ -3,18 +3,17 @@ const PoziviAjax = (()=>{
     function impl_getPredmet(naziv,fnCallback){
         let ajax = new XMLHttpRequest();
         ajax.open("GET", "http://localhost:3000/predmet/"+naziv, true);
-        ajax.send();
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){
                 fnCallback(null, JSON.parse(ajax.response));
             }
         };
+        ajax.send();
     }
     // vraća listu predmeta za loginovanog nastavnika ili grešku da nastavnik nije loginovan
     function impl_getPredmeti(fnCallback){
         let ajax = new XMLHttpRequest();
         ajax.open("GET", "http://localhost:3000/predmeti", true);
-        ajax.send();
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){
                 let div = document.getElementById("meni");
@@ -32,12 +31,12 @@ const PoziviAjax = (()=>{
                 div.appendChild(listaPredmeta);
             }
         };
+        ajax.send();
     }
     function impl_postLogin(username,password,fnCallback){
         let ajax = new XMLHttpRequest();
         ajax.open("POST", "http://localhost:3000/login", true);
         ajax.setRequestHeader("Content-Type", "application/json");
-        ajax.send(JSON.stringify({username: username, password: password}));
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){
                 let odgovor = JSON.parse(ajax.response);
@@ -50,12 +49,12 @@ const PoziviAjax = (()=>{
                 }
             }
         };
+        ajax.send(JSON.stringify({username: username, password: password}));
     }
 
     function impl_postLogout(fnCallback){
         let ajax = new XMLHttpRequest();
         ajax.open("POST", "http://localhost:3000/logout", true);
-        ajax.send();
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){  
                 if(JSON.parse(ajax.response).poruka == "Uspješna odjava"){
@@ -67,18 +66,19 @@ const PoziviAjax = (()=>{
 
             }
         };
+        ajax.send();
     }
     //prisustvo ima oblik {sedmica:N,predavanja:P,vjezbe:V}
     function impl_postPrisustvo(naziv,index,prisustvo,fnCallback){
         let ajax = new XMLHttpRequest();
         ajax.open("POST", "http://localhost:3000/prisustvo/predmet/" + naziv + "/student/" + index, true);
         ajax.setRequestHeader("Content-Type", "application/json");
-        ajax.send(JSON.stringify(prisustvo));
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){
                 fnCallback(null,JSON.parse(ajax.response));
             }
         };
+        ajax.send(JSON.stringify(prisustvo));
     }
     return{
     postLogin: impl_postLogin,
