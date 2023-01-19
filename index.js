@@ -5,7 +5,51 @@ const fs = require('fs');
 const bcrypt = require ('bcrypt');
 const session = require("express-session");
 const path = require('path');
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize('wt22', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
+})
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('Konektovano');
+  })
+  .catch(err => {
+    console.error('Nije konektovano', err);
+  });
 
+const nastavnikModel = sequelize.define('nastavnik', {
+    username: {
+      type: Sequelize.STRING,
+      allowNull: false,
+    },
+    password_hash: {
+      type: Sequelize.STRING,
+    }
+  },{tableName: 'nastavnik'});
+
+const predmetModel = sequelize.define('predmet',{
+    naziv: {
+        type: Sequelize.STRING,
+    },
+    brojPredavanjaSedmicno: {
+        type: Sequelize.INTEGER,
+    },
+    brojVjezbiSedmicno: {
+        type: Sequelize.INTEGER
+    }
+}, {tableName: 'predmet'})
+
+nastavnikModel.hasMany(predmetModel, {as: 'predmeti', foreignKey: 'nastavnik_id'});
+const nastavnikBaza = {username: "USERNAME", password_hash: "$2b$10$KRK38RJ9rRkPjkr6WHI4lO5fwD9ptAOTRlYEiJC/tTxVd.5FZhGbq"};
+const predmet1 = {naziv: "Web tehnologije", brojPredavanjaSedmicno: 2, brojVjezbiSedmicno: 2, nastavnik_id: 1};
+const predmet2 = {naziv: "Tehnike programiranja", brojPredavanjaSedmicno: 2, brojVjezbiSedmicno: 2, nastavnik_id: 1};
+sequelize.sync({force: true}).then(async () =>{
+    await nastavnikModel.create(nastavnikBaza);
+    await predmetModel.create(predmet1);
+    await predmetModel.create(predmet2);
+});
 app.use(express.static('public'));
 app.use(express.static('public/html'));
 app.use(bodyParser.json());
@@ -31,7 +75,27 @@ app.get('/', function(req, res){
 });
 app.post('/login', function(req, res){
     let loginPodaci = req.body;
-    nastavnik = nastavnici.find(n => n.nastavnik.username == loginPodaci.username);
+    nastavnikModel.findOne({where: {username: loginPodaci.username}}).then((nast) =>{
+        if(nast == undefined)
+            res.json({poruka: "Neuspješna prijava"});
+        else{
+            bcrypt.compare(loginPodaci.password, nast.password_hash, (err, resp) => {
+                if (err) throw err;
+    
+                if (resp){ 
+                    nast.getPredmeti().then((predmeti) => {
+                        req.session.username = loginPodaci.username;
+                        req.session.predmeti = predmeti.map(predmet => predmet.naziv);
+                        res.json({poruka: "Uspješna prijava"});
+                    });
+                    
+                }
+                else
+                    res.json({poruka: "Neuspješna prijava"});
+              });
+        }
+    });
+    /*let nastavnik = nastavnici.find(n => n.nastavnik.username == loginPodaci.username);
     
 
     if(nastavnik == undefined)
@@ -50,12 +114,12 @@ app.post('/login', function(req, res){
           });
     }
 
-    
+    */
 });
 
 app.get('/predmeti', function(req, res){
     if(req.session.username != undefined){
-        res.json(nastavnik.predmeti);
+        res.json(req.session.predmeti);
     }
     else{
         res.json({poruka: "Nastavnik nije loginovan"});
