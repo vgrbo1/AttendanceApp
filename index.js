@@ -5,68 +5,8 @@ const fs = require('fs');
 const bcrypt = require ('bcrypt');
 const session = require("express-session");
 const path = require('path');
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('wt22', 'root', 'password', {
-  host: 'localhost',
-  dialect: 'mysql',
-})
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Konektovano');
-  })
-  .catch(err => {
-    console.error('Nije konektovano', err);
-  });
 
-const nastavnikModel = sequelize.define('nastavnik', {
-    username: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    password_hash: {
-      type: Sequelize.STRING,
-    }
-  },{tableName: 'nastavnik'});
-
-const predmetModel = sequelize.define('predmet',{
-    naziv: {
-        type: Sequelize.STRING,
-    },
-    brojPredavanjaSedmicno: {
-        type: Sequelize.INTEGER,
-    },
-    brojVjezbiSedmicno: {
-        type: Sequelize.INTEGER
-    }
-}, {tableName: 'predmet'})
-
-const studentModel = sequelize.define('student', {
-    ime: {
-      type: Sequelize.STRING,
-    },
-    index: {
-      type: Sequelize.INTEGER,
-    }
-  },  {tableName: 'student'});
-
-const prisustvoModel = sequelize.define('prisustvo', {
-    sedmica: {
-      type: Sequelize.INTEGER,
-    },
-    predavanja: {
-      type: Sequelize.INTEGER,
-    },
-    vjezbe: {
-      type: Sequelize.INTEGER,
-    }
-  }, {tableName: 'prisustvo'});
-
-  studentModel.hasMany(prisustvoModel,{as:'prisustva'});
-  predmetModel.hasMany(prisustvoModel,{as: 'prisustva'});
-  nastavnikModel.hasMany(predmetModel, {as: 'predmeti'});
-
-
+//Za bazu
 const nastavnikBaza = {username: "USERNAME", password_hash: "$2b$10$KRK38RJ9rRkPjkr6WHI4lO5fwD9ptAOTRlYEiJC/tTxVd.5FZhGbq"};
 const predmet1 = {naziv: "Web tehnologije", brojPredavanjaSedmicno: 2, brojVjezbiSedmicno: 2, nastavnikId: 1};
 const predmet2 = {naziv: "Tehnike programiranja", brojPredavanjaSedmicno: 2, brojVjezbiSedmicno: 2, nastavnikId: 1};
@@ -76,19 +16,19 @@ const prisustvo1 = {sedmica: 1, predavanja: 0, vjezbe: 0, studentId: 1, predmetI
 const prisustvo2 = {sedmica: 1, predavanja: 0, vjezbe: 1, studentId: 2, predmetId: 1};
 const prisustvo3 = {sedmica: 2, predavanja: 1, vjezbe: 0, studentId: 1, predmetId: 1};
 const prisustvo4 = {sedmica: 2, predavanja: 1, vjezbe: 1, studentId: 2, predmetId: 1};
-
 const prisustvo5 = {sedmica: 1, predavanja: 0, vjezbe: 0, studentId: 1, predmetId: 2};
 const prisustvo6 = {sedmica: 1, predavanja: 0, vjezbe: 1, studentId: 2, predmetId: 2};
 const prisustvo7 = {sedmica: 2, predavanja: 1, vjezbe: 0, studentId: 1, predmetId: 2};
 const prisustvo8 = {sedmica: 2, predavanja: 1, vjezbe: 1, studentId: 2, predmetId: 2};
+const db = require('./db.js')
 
-const prisustvopredmet8 = {prisustvoId: 8, predmetId: 2};
-sequelize.sync({force: true}).then(async () =>{
+db.sequelize.sync(async () => {
     await nastavnikModel.create(nastavnikBaza);
     await predmetModel.bulkCreate([predmet1,predmet2]);
     await studentModel.bulkCreate([student1,student2]);
     await prisustvoModel.bulkCreate([prisustvo1,prisustvo2,prisustvo3,prisustvo4,prisustvo5,prisustvo6,prisustvo7,prisustvo8]);
 });
+
 app.use(express.static('public'));
 app.use(express.static('public/html'));
 app.use(bodyParser.json());
@@ -98,23 +38,12 @@ app.use(session({
     saveUninitialized: true
  }));
  
-/*
-fs.readFile('data/nastavnici.json', (err, data) => {
-    if (err) throw err;
-    nastavnici = JSON.parse(data);
-  });
-
-fs.readFile('data/prisustva.json', (err, data) => {
-    if (err) throw err;
-    prisustva = JSON.parse(data);
-});
-*/
 app.get('/', function(req, res){
     res.json({poruka: "OK"});
 });
 app.post('/login', function(req, res){
     let loginPodaci = req.body;
-    nastavnikModel.findOne({where: {username: loginPodaci.username}}).then((nast) =>{
+    db.nastavnik.findOne({where: {username: loginPodaci.username}}).then((nast) =>{
         if(nast == undefined)
             res.json({poruka: "Neuspješna prijava"});
         else{
@@ -149,10 +78,10 @@ app.get('/predmeti', function(req, res){
 app.get('/predmet/:NAZIV', async function (req, res) {
     if (req.session.username != undefined) {
         try {
-            let predmet = await predmetModel.findOne({ where: { naziv: req.params.NAZIV } });
-            let prisustva = await prisustvoModel.findAll({ where: { predmetId: predmet.id } });
+            let predmet = await db.predmet.findOne({ where: { naziv: req.params.NAZIV } });
+            let prisustva = await db.prisustvo.findAll({ where: { predmetId: predmet.id } });
             let IDstudenata = [...new Set(prisustva.map(p => p.studentId))];
-            let studenti = await studentModel.findAll({ where: { id: IDstudenata } });
+            let studenti = await db.student.findAll({ where: { id: IDstudenata } });
 
             prisustva = prisustva.map(p => {
                 let index = studenti.find(s => s.id == p.studentId).index;
@@ -191,30 +120,30 @@ app.post('/prisustvo/predmet/:NAZIV/student/:index', async function (req, res) {
     let vjezbe = req.body.vjezbe;
 
     try {
-        let predmet = await predmetModel.findOne({ where: { naziv: naziv } });
+        let predmet = await db.predmet.findOne({ where: { naziv: naziv } });
 
         if (predmet == undefined) {
             res.status(404).json({ poruka: "Nepostojeci predmet" });
         }
         else {
-            let student = await studentModel.findOne({ where: { index: index } });
+            let student = await db.student.findOne({ where: { index: index } });
             if (student == undefined) {
                 res.status(404).json({ poruka: "Nepostojeci student" });
             }
             else {
-                let prisustvoStudenta = await prisustvoModel.findOne({ where: { predmetId: predmet.id, studentId: student.id, sedmica: sedmica } });
+                let prisustvoStudenta = await db.prisustvo.findOne({ where: { predmetId: predmet.id, studentId: student.id, sedmica: sedmica } });
                 if (prisustvoStudenta == undefined) {
-                    await prisustvoModel.create({
+                    await db.prisustvo.create({
                         predavanja: predavanja, vjezbe: vjezbe, studentId: student.id, sedmica: sedmica,
                         predmetId: predmet.id
                     });
                 }
                 else {
-                    await prisustvoModel.update({ predavanja: predavanja, vjezbe: vjezbe }, { where: { id: prisustvoStudenta.id } });
+                    await db.prisustvo.update({ predavanja: predavanja, vjezbe: vjezbe }, { where: { id: prisustvoStudenta.id } });
                 }
-                let prisustva = await prisustvoModel.findAll({ where: { predmetId: predmet.id } });
+                let prisustva = await db.prisustvo.findAll({ where: { predmetId: predmet.id } });
                 let IDstudenata = [...new Set(prisustva.map(p => p.studentId))];
-                let studenti = await studentModel.findAll({ where: { id: IDstudenata } });
+                let studenti = await db.student.findAll({ where: { id: IDstudenata } });
 
                 prisustva = prisustva.map(p => {
                     let index = studenti.find(s => s.id == p.studentId).index;
