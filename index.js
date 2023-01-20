@@ -22,11 +22,11 @@ const prisustvo7 = {sedmica: 2, predavanja: 1, vjezbe: 0, studentId: 1, predmetI
 const prisustvo8 = {sedmica: 2, predavanja: 1, vjezbe: 1, studentId: 2, predmetId: 2};
 const db = require('./db.js')
 
-db.sequelize.sync(async () => {
-    await nastavnikModel.create(nastavnikBaza);
-    await predmetModel.bulkCreate([predmet1,predmet2]);
-    await studentModel.bulkCreate([student1,student2]);
-    await prisustvoModel.bulkCreate([prisustvo1,prisustvo2,prisustvo3,prisustvo4,prisustvo5,prisustvo6,prisustvo7,prisustvo8]);
+db.sequelize.sync({force: true}).then(async function () {
+    await db.nastavnik.create(nastavnikBaza);
+    await db.predmet.bulkCreate([predmet1,predmet2]);
+    await db.student.bulkCreate([student1,student2]);
+    await db.prisustvo.bulkCreate([prisustvo1,prisustvo2,prisustvo3,prisustvo4,prisustvo5,prisustvo6,prisustvo7,prisustvo8]);
 });
 
 app.use(express.static('public'));
