@@ -10,6 +10,9 @@ const PoziviAjax = (()=>{
             if (ajax.readyState == 4 && ajax.status == 404){
                 fnCallback(ajax.response, null);
             }
+            if (ajax.readyState == 4 && ajax.status == 500){
+                fnCallback(ajax.response, null);
+            }
         };
         ajax.send();
     }
@@ -56,7 +59,6 @@ const PoziviAjax = (()=>{
                 else{
                     fnCallback(JSON.parse(ajax.response),null);
                 }
-
             }
         };
         ajax.send();
@@ -69,6 +71,9 @@ const PoziviAjax = (()=>{
         ajax.onreadystatechange = function () {
             if (ajax.readyState == 4 && ajax.status == 200){
                 fnCallback(null,JSON.parse(ajax.response));
+            }
+            if(ajax.readyState == 4 && ajax.status ==500){
+                fnCallback(ajax.response, null);
             }
         };
         ajax.send(JSON.stringify(prisustvo));

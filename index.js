@@ -6,7 +6,7 @@ const bcrypt = require ('bcrypt');
 const session = require("express-session");
 const path = require('path');
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('wt22', 'root', '', {
+const sequelize = new Sequelize('wt22', 'root', 'password', {
   host: 'localhost',
   dialect: 'mysql',
 })
@@ -148,22 +148,26 @@ app.get('/predmeti', function(req, res){
 
 app.get('/predmet/:NAZIV', async function (req, res) {
     if (req.session.username != undefined) {
+        try {
+            let predmet = await predmetModel.findOne({ where: { naziv: req.params.NAZIV } });
+            let prisustva = await prisustvoModel.findAll({ where: { predmetId: predmet.id } });
+            let IDstudenata = [...new Set(prisustva.map(p => p.studentId))];
+            let studenti = await studentModel.findAll({ where: { id: IDstudenata } });
 
-        let predmet = await predmetModel.findOne({ where: { naziv: req.params.NAZIV } });
-        let prisustva = await prisustvoModel.findAll({ where: { predmetId: predmet.id } });
-        let IDstudenata = [...new Set(prisustva.map(p => p.studentId))];
-        let studenti = await studentModel.findAll({ where: { id: IDstudenata } });
+            prisustva = prisustva.map(p => {
+                let index = studenti.find(s => s.id == p.studentId).index;
+                return { sedmica: p.sedmica, predavanja: p.predavanja, vjezbe: p.vjezbe, index: index };
+            });
 
-        prisustva = prisustva.map(p => {
-            let index = studenti.find(s => s.id == p.studentId).index;
-            return { sedmica: p.sedmica, predavanja: p.predavanja, vjezbe: p.vjezbe, index: index };
-        });
-
-        res.json({
-            studenti: studenti, prisustva: prisustva, predmet: predmet.naziv, brojPredavanjaSedmicno: predmet.brojPredavanjaSedmicno,
-            brojVjezbiSedmicno: predmet.brojVjezbiSedmicno
-        });
-
+            res.json({
+                studenti: studenti, prisustva: prisustva, predmet: predmet.naziv, brojPredavanjaSedmicno: predmet.brojPredavanjaSedmicno,
+                brojVjezbiSedmicno: predmet.brojVjezbiSedmicno
+            });
+        }
+        catch (err) {
+            console.log(err);
+            res.status(500).json({ poruka: "Greška"});
+        }
     }
     else {
         res.json({ poruka: "Nastavnik nije loginovan" });
@@ -179,47 +183,54 @@ app.post('/logout', function(req, res){
       });
 });
 
-app.post('/prisustvo/predmet/:NAZIV/student/:index', async function(req, res){
+app.post('/prisustvo/predmet/:NAZIV/student/:index', async function (req, res) {
     let naziv = req.params.NAZIV;
     let index = parseInt(req.params.index);
     let sedmica = req.body.sedmica;
     let predavanja = req.body.predavanja;
     let vjezbe = req.body.vjezbe;
 
-    let predmet = await predmetModel.findOne({where: {naziv: naziv}});
-    
-    if(predmet == undefined){
-        res.status(404).json({poruka: "Nepostojeci predmet"});
-    }
-    else{
-        let student = await studentModel.findOne({where: {index: index}});
-        if(student == undefined){
-            res.status(404).json({poruka: "Nepostojeci student"});
-        }
-        else{
-            let prisustvoStudenta = await prisustvoModel.findOne({where: {predmetId: predmet.id, studentId: student.id, sedmica: sedmica}});
-            if (prisustvoStudenta == undefined){
-                await prisustvoModel.create({predavanja: predavanja, vjezbe: vjezbe, studentId: student.id, sedmica: sedmica,
-                predmetId: predmet.id});
-            }
-            else{
-                await prisustvoModel.update({predavanja: predavanja, vjezbe: vjezbe},{where: {id: prisustvoStudenta.id}});
-            }
-            let prisustva = await prisustvoModel.findAll({ where: { predmetId: predmet.id } });
-            let IDstudenata = [...new Set(prisustva.map(p => p.studentId))];
-            let studenti = await studentModel.findAll({ where: { id: IDstudenata } });
+    try {
+        let predmet = await predmetModel.findOne({ where: { naziv: naziv } });
 
-            prisustva = prisustva.map(p => {
-                let index = studenti.find(s => s.id == p.studentId).index;
-                return { sedmica: p.sedmica, predavanja: p.predavanja, vjezbe: p.vjezbe, index: index };
+        if (predmet == undefined) {
+            res.status(404).json({ poruka: "Nepostojeci predmet" });
+        }
+        else {
+            let student = await studentModel.findOne({ where: { index: index } });
+            if (student == undefined) {
+                res.status(404).json({ poruka: "Nepostojeci student" });
+            }
+            else {
+                let prisustvoStudenta = await prisustvoModel.findOne({ where: { predmetId: predmet.id, studentId: student.id, sedmica: sedmica } });
+                if (prisustvoStudenta == undefined) {
+                    await prisustvoModel.create({
+                        predavanja: predavanja, vjezbe: vjezbe, studentId: student.id, sedmica: sedmica,
+                        predmetId: predmet.id
+                    });
+                }
+                else {
+                    await prisustvoModel.update({ predavanja: predavanja, vjezbe: vjezbe }, { where: { id: prisustvoStudenta.id } });
+                }
+                let prisustva = await prisustvoModel.findAll({ where: { predmetId: predmet.id } });
+                let IDstudenata = [...new Set(prisustva.map(p => p.studentId))];
+                let studenti = await studentModel.findAll({ where: { id: IDstudenata } });
+
+                prisustva = prisustva.map(p => {
+                    let index = studenti.find(s => s.id == p.studentId).index;
+                    return { sedmica: p.sedmica, predavanja: p.predavanja, vjezbe: p.vjezbe, index: index };
                 });
 
-            res.json({
-                studenti: studenti, prisustva: prisustva, predmet: predmet.naziv, brojPredavanjaSedmicno: predmet.brojPredavanjaSedmicno,
-                brojVjezbiSedmicno: predmet.brojVjezbiSedmicno
-            });
-
+                res.json({
+                    studenti: studenti, prisustva: prisustva, predmet: predmet.naziv, brojPredavanjaSedmicno: predmet.brojPredavanjaSedmicno,
+                    brojVjezbiSedmicno: predmet.brojVjezbiSedmicno
+                });
+            }
         }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ poruka: "Greška"});
     }
 });
 app.listen(3000);
